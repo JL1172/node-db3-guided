@@ -9,12 +9,12 @@ module.exports = {
 }
 
 async function findPosts(user_id) {
-  
+
   const userPosts = await db("posts as p")
-  .leftJoin("users as u","p.user_id", "u.id")
-  .select("p.id as post_id","contents","username")
-  .where("user_id", user_id);
-  return userPosts; 
+    .leftJoin("users as u", "p.user_id", "u.id")
+    .select("p.id as post_id", "contents", "username")
+    .where("user_id", user_id);
+  return userPosts;
 
   /*
 
@@ -40,11 +40,11 @@ on p.user_id = u.id;
 
 async function find() {
   const found = await db("users as u")
-  .leftJoin("posts as p","u.id","p.user_id")
-  .select("u.id as user_id","username")
-  .count("p.id as postcount")
-  .groupBy("user_id");
-  return found; 
+    .leftJoin("posts as p", "u.id", "p.user_id")
+    .select("u.id as user_id", "username")
+    .count("p.id as postcount")
+    .groupBy("user_id");
+  return found;
   /*
   select 
 u.id as user_id,
@@ -72,24 +72,26 @@ order by postcount desc;
 }
 
 async function findById(id) {
-const foundById = await db("users as u")
-.leftJoin("posts as p","u.id","p.user_id")
-.select("u.id as user_id","username","contents","p.id as post_id")
-.where({user_id : id});
+  const foundById = await db("users as u")
+    .leftJoin("posts as p", "u.id", "p.user_id")
+    .select("u.id as user_id", "username", "contents", "p.id as post_id")
+    .where('u.id',id);
 
-const posts = [];
-for (let key of foundById) {
-  posts.push({
-    post_id : key.post_id,
-    contents : key.contents
-  })
-}
-const returnObj = {
-  user_id : foundById[0].user_id,
-  username : foundById[0].username,
-  posts : posts
-}
-return returnObj; 
+  const posts = [];
+  for (let key of foundById) {
+    if (key.contents) {
+      posts.push({
+        post_id: key.post_id,
+        contents: key.contents
+      })
+    }
+  }
+  const returnObj = {
+    user_id: foundById[0].user_id,
+    username: foundById[0].username,
+    posts: posts
+  }
+  return returnObj;
   /*
     Improve so it resolves this structure:
 select 
@@ -201,36 +203,36 @@ group by u.id;
         etc
     ]
   */
- /*
+/*
 }
 
 async function findById(id) {
-  const unStructuredData = await db("users as u")
-    .leftJoin("posts as p", "u.id", "p.user_id")
-    .select(
-      "u.id as user_id",
-      "username",
-      "contents",
-      "p.id as post_id"
-    )
-    .where({ user_id: id });
-  const posts = [];
-  for (let key of unStructuredData) {
-      posts.push(
-        {
-          post_id: key.post_id,
-          contents: key.contents,
-        }
-      )
-  }
-  const returnObj = {
-    user_id: unStructuredData[0].user_id,
-    username: unStructuredData[0].username,
-    posts: posts,
-  }
-  return returnObj;
-  /*
-    Improve so it resolves this structure:
+ const unStructuredData = await db("users as u")
+   .leftJoin("posts as p", "u.id", "p.user_id")
+   .select(
+     "u.id as user_id",
+     "username",
+     "contents",
+     "p.id as post_id"
+   )
+   .where({ user_id: id });
+ const posts = [];
+ for (let key of unStructuredData) {
+     posts.push(
+       {
+         post_id: key.post_id,
+         contents: key.contents,
+       }
+     )
+ }
+ const returnObj = {
+   user_id: unStructuredData[0].user_id,
+   username: unStructuredData[0].username,
+   posts: posts,
+ }
+ return returnObj;
+ /*
+   Improve so it resolves this structure:
 select 
 u.id as user_id,
 username,
@@ -240,19 +242,19 @@ from
 users as u left join posts as p
 on u.id = p.user_id
 where u.id = 1;
-    {
-      "user_id": 2,
-      "username": "socrates"
-      "posts": [
-        {
-          "post_id": 7,
-          "contents": "Beware of the barrenness of a busy life."
-        },
-        etc
-      ]
-    }
-  */
- /*
+   {
+     "user_id": 2,
+     "username": "socrates"
+     "posts": [
+       {
+         "post_id": 7,
+         "contents": "Beware of the barrenness of a busy life."
+       },
+       etc
+     ]
+   }
+ */
+/*
 }
 */
 
